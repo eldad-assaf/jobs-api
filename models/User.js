@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs/dist/bcrypt");
 
 // Define the user schema
 const userSchema = new mongoose.Schema({
@@ -22,16 +23,27 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a password"], // Password is required
     minLength: 6,
-    maxLength: 12,
   },
   createdAt: {
     type: Date,
-    default: Date.now, // Default value for createdAt is the current date
+    default: Date.now, 
   },
 });
 
+
+
+userSchema.pre('save', async function() {
+    const salt = await bcrypt.genSalt(10);
+    //'this' means the password on this document
+    this.password =  await bcrypt.hash(this.password, salt);
+  
+
+   
+});
+
+
 // Create the User model
-const User = mongoose.model("User", userSchema);
+//const User = mongoose.model("User", userSchema);
 
 // Export the User model
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);
