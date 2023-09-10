@@ -3,8 +3,12 @@ const { StatusCodes } = require("http-status-codes");
 const { BadRequestError } = require("../errors/index");
 
 const register = async (req, res) => {
-  const user = await User.create({ ...req.body});
-  res.status(StatusCodes.CREATED).json({ user });
+  const user = await User.create({ ...req.body });
+  const token = user.createJWT()
+ 
+  res
+    .status(StatusCodes.CREATED)
+    .json({ user: { name: user.name }, token: token });
 };
 
 const login = async (req, res) => {
